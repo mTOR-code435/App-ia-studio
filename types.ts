@@ -1,40 +1,42 @@
 
 export interface ReviewCard {
   id: string;
-  source: string; // Fuente de la evidencia (ej: Entrevista Docente 1, Encuesta Estudiantes)
-  topic: string; // Tema central o título de la evidencia
-  participantRole: 'Docente' | 'Estudiante' | 'Ambos'; // Rol del participante en el estudio
-  evidenceType: string; // Tipo de evidencia (ej: Cuantitativa, Cualitativa)
-  keyFindings: string; // Hallazgos clave o datos principales
-  usageDetails: string; // Caracterización del uso (Común vs Académico)
-  summary: string; // Resumen de la evidencia
-  conclusions: string; // Conclusiones finales o cierre del documento
-  comparativeNotes: string; // Notas comparativas entre Docentes y Estudiantes
-  challengesOpportunities: string; // Desafíos y oportunidades identificados
-  contextualFactors: string; // Factores de conocimiento (TPACK) y Percepción Ética
-  keyEvidence: string; // Citas textuales, datos crudos o evidencia directa
+  source: string; 
+  topic: string; 
+  participantRole: 'Docente' | 'Estudiante' | 'Ambos'; 
+  evidenceType: string; 
+  keyFindings: string; 
+  usageDetails: string; 
+  summary: string; 
+  conclusions: string; 
+  comparativeNotes: string; 
+  challengesOpportunities: string; 
+  contextualFactors: string; 
+  keyEvidence: string; 
+  conceptsDefinitions: string; 
+  theoreticalFoundation: string; 
+  antecedents: string; 
+  dimensionsVariables: string; 
+  methodologicalEvidence: string; 
+  discussionReferences: string; 
+  analysis_reasoning?: string; 
+  chunks?: string[]; 
   tags: string[];
   fullText?: string;
 }
 
-
-// Tipo para los datos del formulario antes de que se asigne un ID.
 export type ReviewCardData = Omit<ReviewCard, 'id' | 'tags'> & {
   tags: string;
 };
 
-// Estructura de celda para la matriz
 export interface SynthesisMatrixCell {
   summary: string;
   justification: string;
 }
 
-// Estructura de datos para la matriz de síntesis: { cardId: { theme: { summary, justification } } }
 export type SynthesisMatrixData = Record<string, Record<string, SynthesisMatrixCell>>;
 
-// Estructura para los resultados del análisis de relevancia de la IA
 export type ContributionType = 'Prácticas de Uso' | 'Percepciones' | 'Conocimiento (TPACK)' | 'Datos Cuantitativos' | 'Observaciones Cualitativas';
-
 
 export interface RelevanceResult {
   relevance: 'Alta' | 'Media' | 'Baja';
@@ -44,7 +46,6 @@ export interface RelevanceResult {
   contributionJustification: string;
 }
 
-// Nuevos tipos para el Análisis por Marco Teórico
 export interface FrameworkTopic {
   id: string;
   title: string;
@@ -62,7 +63,6 @@ export interface FrameworkAnalysisItem {
 
 export type FrameworkAnalysisResult = Record<string, FrameworkAnalysisItem[]>;
 
-// Estructura para el análisis de red de citas
 export interface CitationNetworkData {
   internalCitations: {
     citingCardId: string;
@@ -71,5 +71,43 @@ export interface CitationNetworkData {
   seminalWorks: {
     work: string;
     count: number;
+    verificationStatus?: 'verified' | 'unverified' | 'not_found' | 'pending';
+    verificationUrl?: string;
+    verificationNote?: string;
   }[];
+}
+
+export interface AgentCritique {
+    score: number; 
+    strengths: string[];
+    weaknesses: string[];
+    suggestion: string;
+    thinking?: string; // Nuevo: Para capturar el razonamiento del modelo Pro
+}
+
+export interface VaeVariation {
+  type: 'reconstruction' | 'creative_exploration' | 'synthesis';
+  title: string;
+  content: string;
+  reasoning: string;
+  critique?: AgentCritique;
+}
+
+// NUEVOS TIPOS PARA INVESTIGACIÓN AVANZADA
+export interface ConsistencyIssue {
+    type: 'gap' | 'contradiction' | 'alignment';
+    severity: 'high' | 'medium' | 'low';
+    description: string;
+    relatedObjective?: string;
+    relatedCards?: string[];
+}
+
+export interface TriangulationResult {
+    tensions: {
+        topic: string;
+        docentePerspective: string;
+        estudiantePerspective: string;
+        dialecticAnalysis: string;
+    }[];
+    emergentPatterns: string[];
 }

@@ -11,7 +11,7 @@ interface DataFormProps {
 }
 
 const DataForm: React.FC<DataFormProps> = ({ cardData, onDataChange, onSubmit, onCancel, isEditing }) => {
-  const [activeTab, setActiveTab] = useState<'info' | 'content' | 'analysis'>('info');
+  const [activeTab, setActiveTab] = useState<'info' | 'content' | 'theory' | 'method'>('info');
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>) => {
     onDataChange(e.target.name as keyof ReviewCardData, e.target.value);
@@ -19,14 +19,14 @@ const DataForm: React.FC<DataFormProps> = ({ cardData, onDataChange, onSubmit, o
 
   return (
     <div className="space-y-6">
-        <div className="flex bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
-            {(['info', 'content', 'analysis'] as const).map(tab => (
+        <div className="flex bg-white p-1 rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
+            {(['info', 'content', 'theory', 'method'] as const).map(tab => (
                 <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${activeTab === tab ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-600'}`}
+                    className={`flex-1 py-2 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition-all whitespace-nowrap ${activeTab === tab ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-600'}`}
                 >
-                    {tab === 'info' ? 'Básicos' : tab === 'content' ? 'Resultados' : 'Análisis'}
+                    {tab === 'info' ? 'Básicos' : tab === 'content' ? 'Hallazgos' : tab === 'theory' ? 'Teoría' : 'Método/Disc.'}
                 </button>
             ))}
         </div>
@@ -52,13 +52,25 @@ const DataForm: React.FC<DataFormProps> = ({ cardData, onDataChange, onSubmit, o
                     <Field label="Caracterización de Uso" name="usageDetails" value={cardData.usageDetails} onChange={handleChange} isTextarea rows={3} />
                 </div>
             )}
-
-            {activeTab === 'analysis' && (
+            
+            {activeTab === 'theory' && (
                 <div className="space-y-4">
-                    <Field label="Conocimiento (TPACK) y Ética" name="contextualFactors" value={cardData.contextualFactors} onChange={handleChange} isTextarea rows={3} />
-                    <Field label="Notas Comparativas" name="comparativeNotes" value={cardData.comparativeNotes} onChange={handleChange} isTextarea rows={3} />
-                    <Field label="Desafíos y Oportunidades" name="challengesOpportunities" value={cardData.challengesOpportunities} onChange={handleChange} isTextarea rows={3} />
-                    <Field label="Citas Textuales" name="keyEvidence" value={cardData.keyEvidence} onChange={handleChange} isTextarea rows={5} placeholder="- 'Cita 1'..." />
+                    <Field label="Conceptos y Definiciones" name="conceptsDefinitions" value={cardData.conceptsDefinitions} onChange={handleChange} isTextarea rows={4} placeholder="Definiciones operacionales y citas..." />
+                    <Field label="Teorías de Sustento" name="theoreticalFoundation" value={cardData.theoreticalFoundation} onChange={handleChange} isTextarea rows={4} placeholder="Modelos, leyes o bases teóricas..." />
+                    <Field label="Antecedentes (Estado del Arte)" name="antecedents" value={cardData.antecedents} onChange={handleChange} isTextarea rows={4} placeholder="Hallazgos de investigaciones previas..." />
+                    <Field label="Dimensiones y Variables" name="dimensionsVariables" value={cardData.dimensionsVariables} onChange={handleChange} isTextarea rows={3} />
+                </div>
+            )}
+
+            {activeTab === 'method' && (
+                <div className="space-y-4">
+                     <Field label="Evidencia Metodológica" name="methodologicalEvidence" value={cardData.methodologicalEvidence} onChange={handleChange} isTextarea rows={3} placeholder="Diseño, instrumentos, muestra..." />
+                    <Field label="Discusión y Referencias" name="discussionReferences" value={cardData.discussionReferences} onChange={handleChange} isTextarea rows={3} placeholder="Contrastes y autores clave..." />
+                    <div className="border-t border-slate-100 pt-2 mt-2">
+                        <Field label="Conocimiento (TPACK) y Ética" name="contextualFactors" value={cardData.contextualFactors} onChange={handleChange} isTextarea rows={2} />
+                        <div className="mt-4"></div>
+                        <Field label="Citas Textuales Directas" name="keyEvidence" value={cardData.keyEvidence} onChange={handleChange} isTextarea rows={4} placeholder="- 'Cita 1'..." />
+                    </div>
                 </div>
             )}
         </div>

@@ -1,6 +1,4 @@
 
-
-
 import React, { useState, useEffect } from 'react';
 
 export function useLocalStorage<T>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>, string | null] {
@@ -12,7 +10,7 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, React.Disp
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      console.error(error);
+      console.warn(`Error recuperando clave "${key}" de localStorage:`, error);
       return initialValue;
     }
   });
@@ -23,23 +21,37 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, React.Disp
     try {
       setError(null); // Clear previous errors
       const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
+      
+      // Intentar guardar
       if (typeof window !== 'undefined') {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        const jsonValue = JSON.stringify(valueToStore);
+        window.localStorage.setItem(key, jsonValue);
       }
-    } catch (err) {
+      
+      // Actualizar estado solo si guardado fue exitoso (o si ignoramos error de guardado para la UI, pero mejor mantener consistencia)
+      setStoredValue(valueToStore);
+      
+    } catch (err: any) {
       console.error("Error al guardar en localStorage:", err);
-      let message = 'No se pudo guardar los datos en el almacenamiento local.';
-      // Check for QuotaExceededError which is a DOMException
-      if (err instanceof DOMException && (err.name === 'QuotaExceededError' || err.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
-        message = 'Error Crítico: Se ha alcanzado el límite de almacenamiento del navegador. No se pueden guardar más fichas. Para evitar la pérdida de datos, por favor, exporta una copia de seguridad (JSON) de inmediato y considera eliminar algunas fichas antiguas para liberar espacio.';
+      let message = 'No se pudo guardar los datos automáticamente.';
+      
+      // Detectar QuotaExceededError de forma robusta a través de navegadores
+      const isQuotaError = err instanceof DOMException && (
+          err.name === 'QuotaExceededError' || 
+          err.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+          err.code === 22
+      );
+
+      if (isQuotaError) {
+        message = '⚠️ ALERTA DE ESPACIO: Se ha llenado el almacenamiento del navegador. Las nuevas fichas NO se están guardando permanentemente. Por favor, exporta tus datos (JSON) y borra fichas antiguas para liberar espacio.';
       }
+      
       setError(message);
     }
   };
 
   useEffect(() => {
-    // This effect is to sync changes from other tabs, not strictly necessary for this app
+    // Sincronizar cambios desde otras pestañas
     const handleStorageChange = (e: StorageEvent) => {
         if (e.key === key) {
             try {

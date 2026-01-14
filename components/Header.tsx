@@ -1,6 +1,11 @@
 import React from 'react';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  title: string;
+  subtitle: string;
+}
+
+const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
   return (
     <header className="bg-white shadow-md">
       <div className="container mx-auto px-4 md:px-8 py-6">
@@ -11,8 +16,8 @@ const Header: React.FC = () => {
                 </svg>
             </div>
             <div>
-                 <h1 className="text-2xl md:text-3xl font-bold text-slate-800">Estudio de Caso IA: I.E. Nueva Granada</h1>
-                 <p className="text-slate-500">Caracterización del uso académico y común de IA por docentes y estudiantes.</p>
+                 <h1 className="text-2xl md:text-3xl font-bold text-slate-800">{title}</h1>
+                 <p className="text-slate-500">{subtitle}</p>
             </div>
         </div>
       </div>
